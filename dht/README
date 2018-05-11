@@ -1,0 +1,43 @@
+The defenses I have implemented for each attack is as follows:
+
+1: failing to store data
+
+This attack is already dealt with by the k-fold replication in the default
+kademlia protocol. Even if a node fails to store a given data instance, the data
+can be found by searching in a different node.
+
+An adversary could defeat this defense by simultaneously attacking all of the (at least)
+k nodes at which the data is being stored, thus removing the data. Increasing k would
+make this attack harder.
+
+2: corrupting stored data
+
+My defense against this attack is to verify found values against their key.
+Since any find_value requests start with a key, one can hash the returned values,
+and if the hash is different than the key searched for, it is discarded and the
+culprit node is dropped, and a different node is queried.
+
+This defense could be defeated either by corrupting enough nodes such that no node has
+the data (similar to above attack), or by cracking the hash function to spoof false data
+with the same hash as the given key. Making sure that a sufficiently "hard" hash function
+is used and increasing k would both make these attacks harder.
+
+3: creating a denial-of-service by inserting many keys at your node
+
+For this defense, I opted to have a limit on the number of data entries which any one
+node is allowed to store at my node. I set this limit at 50 entries per node, but 
+the number can be adjusted depending on the network size and node capacity.
+
+This defense could be defeated by creating many malicious nodes, as I did not set a limit on
+the number of nodes which are allowed to store data at my node, and therefore enough malicious nodes
+would still be able to flood my node's storage capacity. I am not sure how a protocol change
+would be able to make this attack more difficult.
+
+4: creating a denial-of-service by inducing routing loops
+
+I am not exactly sure of all of the ways in which this attack could be conducted, but
+my initial response is to not allow repeat nodes to be queried during a node search.
+This way, even in the presence of a routing loop, the limit of my search is still roughly
+logarithmic in the number of nodes in the network.
+
+

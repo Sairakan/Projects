@@ -1,0 +1,14 @@
+#!/usr/bin/python
+import sys
+import os
+
+inpt = sys.argv[1]
+a = bytearray()
+for i in range(0,len(inpt),2):
+    a.append(int(inpt[i]+inpt[i+1],16))
+
+with open("output.txt","wb") as f:
+    f.write(a)
+
+os.system('cat output.txt | dhtcheck decode_message')
+os.remove('output.txt')
